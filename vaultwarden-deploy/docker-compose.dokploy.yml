@@ -1,0 +1,73 @@
+version: "3.8"
+
+# TechOps — Branded Vaultwarden (Dokploy)
+# ==========================================
+# Dokploy сам управляет:
+#   - доменами и SSL (через Traefik)
+#   - переменными окружения (через UI)
+#   - volumes (через UI или автоматически)
+# Добавь переменные из .env.example в Dokploy → Environment Variables
+# ==========================================
+
+services:
+  vaultwarden:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: techops-vaultwarden
+    restart: unless-stopped
+
+    environment:
+      # Основные настройки — задай в Dokploy UI → Environment
+      ORG_NAME: "${ORG_NAME:-TechOps}"
+      DOMAIN: "${DOMAIN}" # обязательно! https://vault.yourdomain.com
+      TEMPLATES_FOLDER: /data/templates
+
+      # Безопасность
+      ADMIN_TOKEN: "${ADMIN_TOKEN}" # генерация: openssl rand -base64 48
+      SIGNUPS_ALLOWED: "${SIGNUPS_ALLOWED:-false}"
+      INVITATIONS_ALLOWED: "${INVITATIONS_ALLOWED:-true}"
+
+      # Email / SMTP
+      SMTP_HOST: "${SMTP_HOST:-}"
+      SMTP_FROM: "${SMTP_FROM:-noreply@example.com}"
+      SMTP_FROM_NAME: "${SMTP_FROM_NAME:-TechOps Vault}"
+      SMTP_SECURITY: "${SMTP_SECURITY:-starttls}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USERNAME: "${SMTP_USERNAME:-}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
+
+      # Push-уведомления (опционально)
+      PUSH_ENABLED: "${PUSH_ENABLED:-false}"
+
+      # Логирование
+      LOG_LEVEL: "${LOG_LEVEL:-warn}"
+      EXTENDED_LOGGING: "true"
+
+    volumes:
+      - vaultwarden_data:/data
+
+    expose:
+      - "80" # Dokploy/Traefik сам проксирует — внешний порт не нужен
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80/alive" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+    labels:
+      # Dokploy использует эти метки для Traefik — значения задаются в UI
+      - "traefik.enable=true"
+      - "traefik.http.routers.vaultwarden.rule=Host(`${DOMAIN_HOST}`)"
+      - "traefik.http.routers.vaultwarden.entrypoints=websecure"
+      - "traefik.http.routers.vaultwarden.tls.certresolver=letsencrypt"
+      - "traefik.http.services.vaultwarden.loadbalancer.server.port=80"
+
+      # WebSocket для нотификаций Bitwarden
+      - "traefik.http.middlewares.vaultwarden-ws.headers.customrequestheaders.X-Real-IP=$${remote_addr}"
+
+volumes:
+  vaultwarden_data:
+    driver: local

@@ -1,0 +1,63 @@
+version: "3.8"
+
+# =====================================================
+# TechOps Vaultwarden — Coolify Production Setup
+# =====================================================
+# Coolify автоматически управляет:
+#   - HTTPS/SSL (через Traefik)
+#   - Переменными окружения (из Coolify UI)
+#   - Обновлениями при git push
+# =====================================================
+
+services:
+  vaultwarden:
+    image: vaultwarden/server:latest
+    restart: unless-stopped
+    environment:
+      # --- Брендинг ---
+      ORG_NAME: "TechOps"
+      TEMPLATES_FOLDER: /data/templates
+
+      # --- Домен (Coolify подставит или укажи вручную) ---
+      DOMAIN: "${DOMAIN}"
+
+      # --- Доступ ---
+      SIGNUPS_ALLOWED: "${SIGNUPS_ALLOWED:-false}"
+      INVITATIONS_ALLOWED: "${INVITATIONS_ALLOWED:-true}"
+
+      # --- Безопасность ---
+      ADMIN_TOKEN: "${ADMIN_TOKEN}"
+
+      # --- Email ---
+      SMTP_HOST: "${SMTP_HOST:-}"
+      SMTP_FROM: "${SMTP_FROM:-noreply@example.com}"
+      SMTP_FROM_NAME: "TechOps Vault"
+      SMTP_SECURITY: "${SMTP_SECURITY:-starttls}"
+      SMTP_PORT: "${SMTP_PORT:-587}"
+      SMTP_USERNAME: "${SMTP_USERNAME:-}"
+      SMTP_PASSWORD: "${SMTP_PASSWORD:-}"
+
+      # --- Логи ---
+      LOG_LEVEL: "${LOG_LEVEL:-warn}"
+      EXTENDED_LOGGING: "true"
+
+    volumes:
+      - vaultwarden_data:/data
+      - ./templates:/data/templates:ro
+      - ./branding:/web-vault/images/techops:ro
+
+    # Coolify управляет портами и доменами через Traefik
+    # Для локального тестирования: порт 8082
+    ports:
+      - "${PORT:-8082}:80"
+
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:80/alive" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+
+volumes:
+  vaultwarden_data:
+    driver: local

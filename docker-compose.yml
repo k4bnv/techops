@@ -38,9 +38,10 @@ services:
     # В настройках Cloudflare Tunnel (строка Service URL) укажите IP этого сервера и порт 8080 
     # (Например: http://192.168.1.100:8080)
     ports:
-      - "8080:80"
+      - "8087:80"
 
 volumes:
   vw-data:
+
 
 

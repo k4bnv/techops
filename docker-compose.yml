@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  vaultwarden:
+    # Build using the custom Dockerfile in this directory
+    build: .
+    # Set the image name so Dokploy creates and manages it easily
+    image: custom-vaultwarden:latest
+    container_name: vaultwarden
+    restart: always
+    environment:
+      # Enable WebSocket notifications
+      - WEBSOCKET_ENABLED=true
+      # Add other config like SIGNUPS_ALLOWED=false if this is a private instance
+      # - SIGNUPS_ALLOWED=false
+      # - DOMAIN=https://vaultwarden.yourdomain.com
+    volumes:
+      - vw-data:/data
+    ports:
+      - "80:80"
+
+volumes:
+  vw-data:

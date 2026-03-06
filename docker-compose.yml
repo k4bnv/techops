@@ -2,8 +2,9 @@ version: '3.8'
 
 services:
   vaultwarden:
-    # МЫ БОЛЬШЕ НЕ СОБИРАЕМ ОБРАЗ! Используем официальный сразу.
-    image: vaultwarden/server:latest
+    # РАЗ ВЫ ЧЕРЕЗ GITHUB — РАСКОММЕНТИРУЕМ BUILD!
+    build: .
+    image: custom-vaultwarden:latest
     container_name: vaultwarden
     restart: always
 
@@ -24,22 +25,12 @@ services:
       - IP_HEADER=CF-Connecting-IP
 
     volumes:
-      # Данные базы и паролей
+      # Только данные, файлы берем из образа
       - vw-data:/data
 
-      # ИДЕАЛЬНО ДЛЯ PORTAINER: ПОДМЕНА ЛОГОТИПОВ НА ЛЕТУ ЧЕРЕЗ VOLUMES (БЕЗ СБОРКИ!)
-      # Мы берем файлы из папки branding на сервере и "накладываем" их поверх стандартных файлов внутри контейнера.
-      - ./branding/logo.png:/web-vault/images/logo-dark@2x.png:ro
-      - ./branding/logo.png:/web-vault/images/logo-light@2x.png:ro
-      - ./branding/logo.png:/web-vault/images/logo.png:ro
-      - ./branding/logo-icon.png:/web-vault/images/icon.png:ro
-      - ./branding/favicon-32.png:/web-vault/images/favicon.ico:ro
-      - ./branding/logo-email.png:/web-vault/images/logo-email.png:ro
-
     # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
-    # Настройки Cloudflare: http://IP_ВАШЕГО_СЕРВЕРА:8080
     ports:
-      - "8087:80"
+      - "8080:80"
 
 volumes:
   vw-data:

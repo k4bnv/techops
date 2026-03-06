@@ -2,21 +2,53 @@ version: '3.8'
 
 services:
   vaultwarden:
-    # Build using the custom Dockerfile in this directory
     build: .
-    # Set the image name so Dokploy creates and manages it easily
     image: custom-vaultwarden:latest
     container_name: vaultwarden
     restart: always
+
     environment:
-      # Enable WebSocket notifications
-      - WEBSOCKET_ENABLED=true
-      # Add other config like SIGNUPS_ALLOWED=false if this is a private instance
-      # - SIGNUPS_ALLOWED=false
-      # - DOMAIN=https://vaultwarden.yourdomain.com
+      # ОСНОВНЫЕ
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
+      - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
+      - DOMAIN=${DOMAIN:-}
+      - SIGNUPS_VERIFY=${SIGNUPS_VERIFY:-false}
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
+      - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT:-true}
+      - LOG_LEVEL=${LOG_LEVEL:-warn}
+      - REQUIRE_DEVICE_EMAIL=${REQUIRE_DEVICE_EMAIL:-false}
+      - SENDS_ALLOWED=${SENDS_ALLOWED:-true}
+      - TRASH_AUTO_DELETE_DAYS=${TRASH_AUTO_DELETE_DAYS:-30}
+
+      # Cloudflare Tunnel / Reverse Proxy настройки
+      # Так как трафик идет через туннель Cloudflare, IP-адреса клиентов скрыты.
+      # Эти настройки нужны Vaultwarden, чтобы он доверял заголовкам Cloudflare.
+      - IP_HEADER=CF-Connecting-IP
+      # - REAL_IP=true # Иногда требуется включить для правильной склейки IP
+
+      # SMTP
+      - SMTP_HOST=${SMTP_HOST:-}
+      - SMTP_FROM=${SMTP_FROM:-}
+      - SMTP_FROM_NAME=${SMTP_FROM_NAME:-}
+      - SMTP_PORT=${SMTP_PORT:-587}
+      - SMTP_SECURITY=${SMTP_SECURITY:-starttls}
+      - SMTP_USERNAME=${SMTP_USERNAME:-}
+      - SMTP_PASSWORD=${SMTP_PASSWORD:-}
+      - SMTP_AUTH_MECHANISM=${SMTP_AUTH_MECHANISM:-Plain}
+
+      # ДАННЫЕ
+      - DATA_FOLDER=/data
+
     volumes:
       - vw-data:/data
+    # ВАЖНО для Cloudflare Tunnel:
+    # Обычно Dokploy разворачивает приложения в своей внутренней сети (например, dokploy-network).
+    # Если вы используете Cloudflare Tunnel через другой контейнер (например, cloudflared), 
+    # порты наружу (на хост машину) прокидывать НЕ нужно!
+    # Если туннель запущен не в Dokploy, а на самом сервере, то порты нужно оставить:
+    # ports:
+    #  - "80:80"
 
 volumes:
   vw-data:
-

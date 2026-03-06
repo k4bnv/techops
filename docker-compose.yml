@@ -12,8 +12,7 @@ services:
       # ОСНОВНЫЕ
       - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
       - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
-      - DOMAIN=${DOMAIN:-}
-      - ADMIN_TOKEN=${ADMIN_TOKEN:-}
+      - ADMIN_TOKEN=kaban311
       - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
       - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT:-true}
       - LOG_LEVEL=${LOG_LEVEL:-warn}
@@ -34,4 +33,5 @@ services:
 
 volumes:
   vw-data:
+
 

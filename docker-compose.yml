@@ -2,9 +2,11 @@ version: '3.8'
 
 services:
   vaultwarden:
-    # РАЗ ВЫ ЧЕРЕЗ GITHUB — РАСКОММЕНТИРУЕМ BUILD!
+    # Собираем образ из Dockerfile — НЕ тянем с Docker Hub
     build: .
-    image: custom-vaultwarden:latest
+    # pull_policy: never запрещает Docker пытаться скачать образ,
+    # заставляет всегда использовать локально собранный
+    pull_policy: never
     container_name: vaultwarden
     restart: always
 
@@ -12,7 +14,8 @@ services:
       # ОСНОВНЫЕ
       - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
       - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
-      - ADMIN_TOKEN=kaban311
+      - DOMAIN=https://ps3.kolyachaba.top/
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-}
       - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
       - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT:-true}
       - LOG_LEVEL=${LOG_LEVEL:-warn}
@@ -33,5 +36,3 @@ services:
 
 volumes:
   vw-data:
-
-

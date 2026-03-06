@@ -2,11 +2,8 @@ version: '3.8'
 
 services:
   vaultwarden:
-    # Закомментировано для Portainer (развертывание заранее собранного образа),
-    # если собираете через Dokploy или консоль, можно раскомментировать.
-    # build: .
-
-    image: custom-vaultwarden:latest
+    # МЫ БОЛЬШЕ НЕ СОБИРАЕМ ОБРАЗ! Используем официальный сразу.
+    image: vaultwarden/server:latest
     container_name: vaultwarden
     restart: always
 
@@ -14,8 +11,7 @@ services:
       # ОСНОВНЫЕ
       - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
       - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
-      - DOMAIN=https://ps.kolyachaba.top
-      - SIGNUPS_VERIFY=${SIGNUPS_VERIFY:-false}
+      - DOMAIN=${DOMAIN:-}
       - ADMIN_TOKEN=${ADMIN_TOKEN:-}
       - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
       - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT:-true}
@@ -27,21 +23,23 @@ services:
       # Cloudflare Tunnel / Reverse Proxy настройки
       - IP_HEADER=CF-Connecting-IP
 
-      # ДАННЫЕ
-      - DATA_FOLDER=/data
-
     volumes:
+      # Данные базы и паролей
       - vw-data:/data
 
-    # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ НА ДРУГОЙ ВИРТУАЛЬНОЙ МАШИНЕ:
-    # Portainer "выставит" этот контейнер на порт 8080 вашего сервера.
-    # В настройках Cloudflare Tunnel (строка Service URL) укажите IP этого сервера и порт 8080 
-    # (Например: http://192.168.1.100:8080)
+      # ИДЕАЛЬНО ДЛЯ PORTAINER: ПОДМЕНА ЛОГОТИПОВ НА ЛЕТУ ЧЕРЕЗ VOLUMES (БЕЗ СБОРКИ!)
+      # Мы берем файлы из папки branding на сервере и "накладываем" их поверх стандартных файлов внутри контейнера.
+      - ./branding/logo.png:/web-vault/images/logo-dark@2x.png:ro
+      - ./branding/logo.png:/web-vault/images/logo-light@2x.png:ro
+      - ./branding/logo.png:/web-vault/images/logo.png:ro
+      - ./branding/logo-icon.png:/web-vault/images/icon.png:ro
+      - ./branding/favicon-32.png:/web-vault/images/favicon.ico:ro
+      - ./branding/logo-email.png:/web-vault/images/logo-email.png:ro
+
+    # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
+    # Настройки Cloudflare: http://IP_ВАШЕГО_СЕРВЕРА:8080
     ports:
       - "8087:80"
 
 volumes:
   vw-data:
-
-
-

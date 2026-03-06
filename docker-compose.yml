@@ -23,12 +23,17 @@ services:
       - SENDS_ALLOWED=${SENDS_ALLOWED:-true}
       - TRASH_AUTO_DELETE_DAYS=${TRASH_AUTO_DELETE_DAYS:-30}
 
+      # Настройка шаблонов для кастомного CSS (скрывает дефолтный SVG-логотип)
+      - TEMPLATES_FOLDER=/data/templates
+
       # Cloudflare Tunnel / Reverse Proxy настройки
       - IP_HEADER=CF-Connecting-IP
 
     volumes:
       # Только данные, файлы берем из образа
       - vw-data:/data
+      # Монтируем папку с шаблоном CSS-переопределения
+      - ./templates:/data/templates
 
     # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
     ports:

@@ -14,7 +14,7 @@ services:
       # ОСНОВНЫЕ
       - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
       - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
-      - DOMAIN=${DOMAIN:-}
+      - DOMAIN=https://ps.kolyachaba.top
       - SIGNUPS_VERIFY=${SIGNUPS_VERIFY:-false}
       - ADMIN_TOKEN=${ADMIN_TOKEN:-}
       - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
@@ -52,3 +52,4 @@ services:
 
 volumes:
   vw-data:
+

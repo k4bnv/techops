@@ -1,0 +1,29 @@
+body {
+    // Hide the default Vaultwarden inline SVG logos
+    .logo-inline {
+        display: none !important;
+    }
+
+    // Replace the login page logo
+    .navbar-brand {
+        background-image: url('/images/logo.png') !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+        background-size: contain !important;
+        width: 250px !important;
+        height: 50px !important;
+        
+        // Hide any text or inline elements inside the brand link
+        img, svg {
+            display: none !important;
+        }
+    }
+
+    // Replace the header logo inside the vault
+    header .navbar-brand {
+        background-image: url('/images/logo.png') !important;
+        background-size: contain !important;
+        width: 150px !important;
+        height: 35px !important;
+    }
+}

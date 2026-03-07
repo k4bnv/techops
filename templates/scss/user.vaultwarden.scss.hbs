@@ -1,29 +1,27 @@
 body {
-    // Hide the default Vaultwarden inline SVG logos
-    .logo-inline {
-        display: none !important;
+    // Aggressively replace the logo on the login page and inside the vault
+    .navbar-brand img, .navbar-brand svg {
+        // Заменяем оригинальную картинку на наш логотип
+        content: url('/images/logo-dark@2x.png') !important;
+        // Задаем оригинальные размеры или подходящие под navbar
+        max-width: 100% !important;
+        max-height: 50px !important; // Ограничиваем высоту для навбара
+        width: auto !important;
+        height: auto !important;
+        background-color: transparent !important; // Убеждаемся что нет фона
     }
 
-    // Replace the login page logo
+    // Дополнительная очистка фона, если бренд-контейнер имеет свой фон
     .navbar-brand {
-        background-image: url('/images/logo.png') !important;
-        background-repeat: no-repeat !important;
-        background-position: center !important;
-        background-size: contain !important;
-        width: 250px !important;
-        height: 50px !important;
-        
-        // Hide any text or inline elements inside the brand link
-        img, svg {
-            display: none !important;
-        }
+        background: transparent !important;
     }
 
-    // Replace the header logo inside the vault
-    header .navbar-brand {
-        background-image: url('/images/logo.png') !important;
-        background-size: contain !important;
-        width: 150px !important;
-        height: 35px !important;
+    // Если Vaultwarden где-то использует классы margin, убираем дефолтные SVG
+    .logo-inline {
+        content: url('/images/logo-dark@2x.png') !important;
+        max-height: 50px !important;
+        width: auto !important;
+        height: auto !important;
+        background-color: transparent !important;
     }
 }

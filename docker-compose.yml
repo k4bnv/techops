@@ -33,7 +33,7 @@ services:
       # Только данные, файлы берем из образа
       - vw-data:/data
       # Монтируем папку с шаблоном CSS-переопределения
-      - ./templates:/data/templates
+      - /root/templates:/data/templates
 
     # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
     ports:
@@ -41,3 +41,4 @@ services:
 
 volumes:
   vw-data:
+

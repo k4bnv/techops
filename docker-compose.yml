@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  vaultwarden:
+    # Собираем образ из Dockerfile — НЕ тянем с Docker Hub
+    build: .
+    # pull_policy: never запрещает Docker пытаться скачать образ,
+    # заставляет всегда использовать локально собранный
+    pull_policy: never
+    container_name: vaultwarden
+    restart: always
+
+    environment:
+      # ОСНОВНЫЕ
+      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
+      - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
+      - DOMAIN=https://ps3.kolyachaba.top/
+      - ADMIN_TOKEN=${ADMIN_TOKEN:-}
+      - INVITATIONS_ALLOWED=${INVITATIONS_ALLOWED:-true}
+      - SHOW_PASSWORD_HINT=${SHOW_PASSWORD_HINT:-true}
+      - LOG_LEVEL=${LOG_LEVEL:-warn}
+      - REQUIRE_DEVICE_EMAIL=${REQUIRE_DEVICE_EMAIL:-false}
+      - SENDS_ALLOWED=${SENDS_ALLOWED:-true}
+      - TRASH_AUTO_DELETE_DAYS=${TRASH_AUTO_DELETE_DAYS:-30}
+
+      # Настройка шаблонов для кастомного CSS (скрывает дефолтный SVG-логотип)
+      - TEMPLATES_FOLDER=/data/templates
+
+      # Cloudflare Tunnel / Reverse Proxy настройки
+      - IP_HEADER=CF-Connecting-IP
+
+    volumes:
+      # Только данные, файлы берем из образа
+      - vw-data:/data
+      # Монтируем папку с шаблоном CSS-переопределения
+      - ./templates:/data/templates
+
+    # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
+    ports:
+      - "8087:80"
+
+volumes:
+  vw-data:

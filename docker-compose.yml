@@ -12,7 +12,7 @@ services:
 
     environment:
       # ОСНОВНЫЕ
-      - SIGNUPS_ALLOWED=${SIGNUPS_ALLOWED:-false}
+      - SIGNUPS_ALLOWED=true
       - WEBSOCKET_ENABLED=${WEBSOCKET_ENABLED:-true}
       - DOMAIN=https://ps3.kolyachaba.top/
       - ADMIN_TOKEN=kaban311
@@ -41,5 +41,6 @@ services:
 
 volumes:
   vw-data:
+
 
 

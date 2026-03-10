@@ -23,15 +23,20 @@ services:
       - SENDS_ALLOWED=${SENDS_ALLOWED:-true}
       - TRASH_AUTO_DELETE_DAYS=${TRASH_AUTO_DELETE_DAYS:-30}
 
-      # Настройка шаблонов для кастомного CSS (папка бакается в образ через Dockerfile COPY)
-      - TEMPLATES_FOLDER=/vw-templates
+      # Настройка шаблонов для кастомного CSS
+      # ВАЖНО: папка ./templates должна существовать на сервере рядом с docker-compose.yml
+      # Если не работает - замените ./templates на абсолютный путь: /path/on/server/templates
+      - TEMPLATES_FOLDER=/data/templates
 
       # Cloudflare Tunnel / Reverse Proxy настройки
       - IP_HEADER=CF-Connecting-IP
 
     volumes:
-      # Только данные
+      # Данные Vaultwarden
       - vw-data:/data
+      # CSS шаблоны — папка templates должна существовать на сервере
+      # Если относительный путь не работает, используйте абсолютный путь к папке на сервере
+      - /root/templates:/data/templates
 
     # ПРОБРОС ПОРТОВ ДЛЯ ТУННЕЛЯ CLOUDFLARE (НА ДРУГОЙ ВИРТУАЛКЕ)
     ports:
